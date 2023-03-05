@@ -163,9 +163,6 @@ namespace MiScaleExporter.MAUI.ViewModels
                     //await Application.Current.MainPage.DisplayAlert("Response", message, "OK");
                     ScanningLabel += message + "\n";
                 }
-
-                // This will pop the current page off the navigation stack
-                //await Shell.Current.GoToAsync("..?autoUpload=false");
             }
 
             LoadingLabel = "Clearing history...";

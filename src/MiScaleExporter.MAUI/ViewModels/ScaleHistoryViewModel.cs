@@ -159,7 +159,7 @@ namespace MiScaleExporter.MAUI.ViewModels
                     var password = await SecureStorage.GetAsync(PreferencesKeys.GarminUserPassword);
 
                     var response = await this._garminService.UploadAsync(bc, DateTime.Now, email, password);
-                    var message = response.IsSuccess ? String.Format("{0:'yyyy-MM-dd HH:mm:ss'} > {1:0.00} Uploaded", bc.Date, bc.Weight) : response.Message;
+                    var message = response.IsSuccess ? String.Format("{0} > {1:0.00} Uploaded", bc.Date, bc.Weight) : response.Message;
                     //await Application.Current.MainPage.DisplayAlert("Response", message, "OK");
                     ScanningLabel += message + "\n";
                 }

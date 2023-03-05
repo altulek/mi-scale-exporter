@@ -11,6 +11,8 @@ public class AboutViewModel : BaseViewModel
         this.Title = "About";
         GoToScanCommand = new Command(async () =>
             await Shell.Current.GoToAsync("///ScalePage"));
+        GetHistoryCommand = new Command(async () =>
+            await Shell.Current.GoToAsync("///ScaleHistoryPage"));
         OpenGithubCommand = new Command(async () =>
             await Browser.OpenAsync("https://github.com/lswiderski/mi-scale-exporter"));
         OpenCoffeeCommand = new Command(async () =>
@@ -18,6 +20,7 @@ public class AboutViewModel : BaseViewModel
     }
     
     public ICommand GoToScanCommand { get; }
+    public ICommand GetHistoryCommand { get; }
     public ICommand OpenGithubCommand { get; }
     public ICommand OpenCoffeeCommand { get; }
 }

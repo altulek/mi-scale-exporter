@@ -22,6 +22,8 @@ namespace MiScaleExporter.Models
         public bool HasImpedance { get; set; }
         public bool IsStabilized { get; set; }
         public DateTime Date { get; set; }
-        public byte[] ReceivedRawData { get; set; } 
+        public byte[] ReceivedRawData { get; set; }
+
+        public bool Send { get; set; } = true; 
     }
 }

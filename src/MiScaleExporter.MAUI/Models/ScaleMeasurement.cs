@@ -7,11 +7,32 @@ using System.Threading.Tasks;
 
 namespace MiScaleExporter.Models
 {
-    public class ScaleMeasurement : INotifyPropertyChanged 
+    public class ScaleMeasurement : INotifyPropertyChanged
     {
 
         private ScaleMeasurement() { }
         public static ScaleMeasurement Instance { get; } = new ScaleMeasurement();
+
+        private List<BodyComposition> _history = new List<BodyComposition>();
+        public List<BodyComposition> History
+        {
+            get => _history;
+            set
+            {
+                if (_history != value)
+                {
+                    _history = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(History)));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CanSaveHistory)));
+                }
+            }
+        }
+
+        public bool CanSaveHistory
+        {
+            get { return _history.Where(h => h.Send == true).Count() > 0; }  
+        }
+
 
         private string _weight;
         public string Weight

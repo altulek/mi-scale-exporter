@@ -30,14 +30,7 @@ public class GarminService : IGarminService
 
     public async Task<GarminApiResponse> UploadAsync(BodyComposition bodyComposition, DateTime time, string email, string password)
     {
-        if(Preferences.Get(PreferencesKeys.UseExternalAPI, false))
-        {
-            return await UploadViaExternalAPIAsync(bodyComposition, time, email, password);
-        }
-        else
-        {
-            return await UploadViaDirectCallToGarminAsync(bodyComposition, time, email, password);
-        }
+        return await UploadViaDirectCallToGarminAsync(bodyComposition, time, email, password);
     }
 
     private async Task<GarminApiResponse> UploadViaDirectCallToGarminAsync(BodyComposition bodyComposition, DateTime time, string email, string password)
@@ -79,27 +72,6 @@ public class GarminService : IGarminService
             return result;
         }
        
-    }
-
-    private async Task<GarminApiResponse> UploadViaExternalAPIAsync(BodyComposition bodyComposition, DateTime time, string email, string password)
-    {
-        var unixTime = ((DateTimeOffset) time).ToUnixTimeSeconds();
-        var request = new GarminBodyCompositionRequest
-        {
-            Email = email,
-            Password = password,
-            Weight = bodyComposition.Weight,
-            BoneMass = bodyComposition.BoneMass,
-            MuscleMass = bodyComposition.MuscleMass,
-            MetabolicAge = bodyComposition.MetabolicAge,
-            PercentFat = bodyComposition.Fat,
-            VisceralFatRating = bodyComposition.VisceralFat,
-            BodyMassIndex = bodyComposition.BMI,
-            PercentHydration = bodyComposition.WaterPercentage,
-            PhysiqueRating = bodyComposition.BodyType,
-            TimeStamp = unixTime
-        };
-       return await UploadToGarminCloud(request);
     }
 
     private async Task<GarminApiResponse> UploadToGarminCloud(GarminBodyCompositionRequest request)

@@ -4,25 +4,32 @@ using MiScaleExporter.Permission;
 
 namespace MiScaleExporter.MAUI.ViewModels
 {
-    public class ScaleViewModel : BaseViewModel, IScaleViewModel
+    public class ScaleHistoryViewModel : BaseViewModel, IScaleHistoryViewModel
     {
         private readonly IScale _scale;
         private readonly ILogService _logService;
+        private readonly IGarminService _garminService;
 
         private string _address;
         private int _age;
         private int _height;
         private Models.Sex _sex;
         private ScaleType _scaleType;
+        private byte[] _deviceId;
 
-        public ScaleViewModel(IScale scale, ILogService logService)
+      
+
+        public ScaleHistoryViewModel(IScale scale, ILogService logService, IGarminService garminService)
         {
             _scale = scale;
             _logService = logService;
+            _garminService = garminService;
 
-            Title = "Mi Scale Data";
+            Title = "Mi Scale History";
+            SendHistoryCommand = new Command(OnSendHistory);
             CancelCommand = new Command(OnCancel);
             StopCommand = new Command(OnStop);
+           
         }
 
         public async Task CheckPreferencesAsync()
@@ -54,6 +61,7 @@ namespace MiScaleExporter.MAUI.ViewModels
             this._sex = (Models.Sex)Preferences.Get(PreferencesKeys.UserSex, (byte)Models.Sex.Male);
             this._address = Preferences.Get(PreferencesKeys.MiScaleBluetoothAddress, string.Empty);
             this._scaleType = (ScaleType)Preferences.Get(PreferencesKeys.ScaleType, (byte)ScaleType.MiBodyCompositionScale);
+            this._deviceId = BitConverter.GetBytes(UInt32.Parse(Preferences.Get(PreferencesKeys.DeviceId, String.Empty)));
         }
 
         private async void OnScan()
@@ -102,10 +110,11 @@ namespace MiScaleExporter.MAUI.ViewModels
 
         private async Task StartScan()
         {
-            ScanningLabel = string.Empty;
+            ScanningLabel = String.Empty;
+            LoadingLabel = "Getting data...";
             ScaleMeasurement.Instance.Weight = "0";
             this.IsBusyForm = true;
-            await this._scale.GetBodyCompositonAsync(_address, new User { Sex = _sex, Age = _age, Height = _height, ScaleType = _scaleType });
+            await this._scale.GetHistoryAsync(_address, _deviceId, new User { Sex = _sex, Age = _age, Height = _height, ScaleType = _scaleType });
             this.OnStop();
         }
 
@@ -113,7 +122,8 @@ namespace MiScaleExporter.MAUI.ViewModels
         {
             this._scale.StopSearch();
             this.IsBusyForm = false;
-            if (this._scale.BodyComposition is null || !this._scale.BodyComposition.IsValid)
+            ScanningLabel = "Finished. Found: " + ScaleMeasurement.Instance.History.Count;
+            /*if (this._scale.BodyComposition is null || !this._scale.BodyComposition.IsValid)
             {
                 var msg = "Data could not be obtained. try again";
                 await Application.Current.MainPage.DisplayAlert("Problem", msg,
@@ -125,12 +135,45 @@ namespace MiScaleExporter.MAUI.ViewModels
             {
                 App.BodyComposition = this._scale.BodyComposition;
                 await Shell.Current.GoToAsync($"//FormPage?autoUpload={Preferences.Get(PreferencesKeys.OneClickScanAndUpload, false)}");
-            }
+            }*/
         }
 
         private async void OnCancel()
         {
             await this._scale.CancelSearchAsync();
+            this.IsBusyForm = false;
+        }
+
+        private async void OnSendHistory()
+        {
+            LoadingLabel = "Sending data...";
+            ScanningLabel = "";
+            this.IsBusyForm = true;
+            foreach (var bc in ScaleMeasurement.Instance.History)
+            {
+                Console.WriteLine("{0} {1}: {2}", bc.Date, bc.Weight, bc.Send);
+
+                if(bc.Send)
+                {
+                    var email = Preferences.Get(PreferencesKeys.GarminUserEmail, string.Empty);
+                    var password = await SecureStorage.GetAsync(PreferencesKeys.GarminUserPassword);
+
+                    var response = await this._garminService.UploadAsync(bc, DateTime.Now, email, password);
+                    var message = response.IsSuccess ? String.Format("{0:'yyyy-MM-dd HH:mm:ss'} > {1:0.00} Uploaded", bc.Date, bc.Weight) : response.Message;
+                    //await Application.Current.MainPage.DisplayAlert("Response", message, "OK");
+                    ScanningLabel += message + "\n";
+                }
+
+                // This will pop the current page off the navigation stack
+                //await Shell.Current.GoToAsync("..?autoUpload=false");
+            }
+
+            LoadingLabel = "Clearing history...";
+
+            bool result = await _scale.ClearHistoryAsync();
+
+            ScanningLabel += "Finished. Clearing result: " + result;
+
             this.IsBusyForm = false;
         }
 
@@ -156,6 +199,7 @@ namespace MiScaleExporter.MAUI.ViewModels
             return status;
         }
 
+        public Command SendHistoryCommand { get; }
         public Command CancelCommand { get; }
         public Command StopCommand { get; }
 
@@ -167,12 +211,27 @@ namespace MiScaleExporter.MAUI.ViewModels
             set => SetProperty(ref _scanningLabel, value);
         }
 
+        private string _scanningProgressLabel;
+        public string ScanningProgressLabel
+        {
+            get => _scanningProgressLabel;
+            set => SetProperty(ref _scanningProgressLabel, value);
+        }
+
         private bool _isBusyForm;
 
         public bool IsBusyForm
         {
             get => _isBusyForm;
             set => SetProperty(ref _isBusyForm, value);
+        }
+
+        private string _loadingLabel;
+
+        public string LoadingLabel
+        {
+            get => _loadingLabel;
+            set => SetProperty(ref _loadingLabel, value);
         }
     }
 }

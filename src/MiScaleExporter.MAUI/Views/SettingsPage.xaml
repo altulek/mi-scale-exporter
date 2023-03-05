@@ -90,6 +90,8 @@
                                 Value="1" />
                             <Label FontSize="Small" Text="Bluetooth Address" />
                             <Entry FontSize="Medium" Text="{Binding Address, Mode=TwoWay}" />
+                            <Label FontSize="Small" Text="Device ID" />
+                            <Entry FontSize="Medium" Text="{Binding DeviceId, Mode=TwoWay}" />
 
                         </StackLayout>
 
@@ -153,11 +155,6 @@
                                     <ColumnDefinition Width="auto" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <CheckBox
-                                    Grid.Row="0"
-                                    Grid.Column="0"
-                                    IsChecked="{Binding UseExternalAPI, Mode=TwoWay}"
-                                    VerticalOptions="Center" />
                                 <Label
                                     Grid.Row="0"
                                     Grid.Column="1"

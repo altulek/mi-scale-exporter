@@ -16,7 +16,6 @@ namespace MiScaleExporter.MAUI.ViewModels
                     Preferences.Remove(PreferencesKeys.ApiServerAddressOverride);
                     this.ApiAddress = string.Empty;
                     Preferences.Remove(PreferencesKeys.OneClickScanAndUpload);
-                    Preferences.Remove(PreferencesKeys.UseExternalAPI);
                     Preferences.Remove(PreferencesKeys.ShowDebugInfo);
                 }
             );
@@ -29,13 +28,13 @@ namespace MiScaleExporter.MAUI.ViewModels
         {
             this._apiAddress = Preferences.Get(PreferencesKeys.ApiServerAddressOverride, string.Empty);
             this._oneClickScanAndUpload = Preferences.Get(PreferencesKeys.OneClickScanAndUpload, false);
-            this._useExternalAPI = Preferences.Get(PreferencesKeys.UseExternalAPI, false);
             this._showDebugInfo = Preferences.Get(PreferencesKeys.ShowDebugInfo, false);
 
             this._age = Preferences.Get(PreferencesKeys.UserAge, 25);
             this._height = Preferences.Get(PreferencesKeys.UserHeight, 170);
             this._sex = (Sex)Preferences.Get(PreferencesKeys.UserSex, (byte)Sex.Male);
             this._address = Preferences.Get(PreferencesKeys.MiScaleBluetoothAddress, string.Empty);
+            this._deviceId = Preferences.Get(PreferencesKeys.DeviceId, string.Empty);
             this._scaleType = (ScaleType)Preferences.Get(PreferencesKeys.ScaleType, (byte)ScaleType.MiBodyCompositionScale);
             this._email = Preferences.Get(PreferencesKeys.GarminUserEmail, string.Empty);
             this._password = await SecureStorage.GetAsync(PreferencesKeys.GarminUserPassword);
@@ -85,18 +84,6 @@ namespace MiScaleExporter.MAUI.ViewModels
             }
         }
 
-        private bool _useExternalAPI;
-
-        public bool UseExternalAPI
-        {
-            get => _useExternalAPI;
-            set
-            {
-                Preferences.Set(PreferencesKeys.UseExternalAPI, value);
-                SetProperty(ref _useExternalAPI, value);
-            }
-        }
-
         private bool _showDebugInfo;
 
         public bool ShowDebugInfo
@@ -143,6 +130,18 @@ namespace MiScaleExporter.MAUI.ViewModels
             {
                 SetProperty(ref _address, value);
                 Preferences.Set(PreferencesKeys.MiScaleBluetoothAddress, value);
+            }
+        }
+
+        private string _deviceId;
+
+        public string DeviceId
+        {
+            get => _deviceId;
+            set
+            {
+                SetProperty(ref _deviceId, value);
+                Preferences.Set(PreferencesKeys.DeviceId, value);
             }
         }
 

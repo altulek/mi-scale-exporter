@@ -10,6 +10,8 @@ namespace MiScaleExporter.Services
     {
         BodyComposition BodyComposition { get; set; }
         Task<BodyComposition> GetBodyCompositonAsync(string scaleAddress, User user);
+        Task<List<BodyComposition>> GetHistoryAsync(string scaleAddress, byte[] deviceId, User user);
+        Task<bool> ClearHistoryAsync();
 
         Task CancelSearchAsync();
 

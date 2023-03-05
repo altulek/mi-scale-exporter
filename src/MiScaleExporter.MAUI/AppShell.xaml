@@ -99,6 +99,18 @@
         <ShellContent ContentTemplate="{DataTemplate local:AboutPage}" Route="AboutPage" />
     </FlyoutItem>
 
+    <FlyoutItem Title="Mi Scale History">
+        <FlyoutItem.Icon>
+            <FontImageSource
+                FontFamily="FontAwesome6Solid"
+                Glyph="&#xf1da;"
+                Size="16"
+                Color="{AppThemeBinding Light={StaticResource Black},
+                                        Dark={StaticResource White}}" />
+        </FlyoutItem.Icon>
+        <ShellContent ContentTemplate="{DataTemplate local:ScaleHistoryPage}" Route="ScaleHistoryPage" />
+    </FlyoutItem>
+    
     <FlyoutItem Title="Mi Scale">
         <FlyoutItem.Icon>
             <FontImageSource

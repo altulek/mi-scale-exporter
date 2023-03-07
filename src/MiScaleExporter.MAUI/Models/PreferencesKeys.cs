@@ -3,6 +3,7 @@
 public static class PreferencesKeys
 {
     public static string UserAge = "UserAge";
+    public static string UserBirthday = "UserBirthday";
     public static string UserHeight = "UserHeight";
     public static string UserSex = "UserSex";
     public static string MiScaleBluetoothAddress = "MiScaleBluetoothAddress";
@@ -14,4 +15,5 @@ public static class PreferencesKeys
     public static string ScaleType = "ScaleType";
     public static string OneClickScanAndUpload = "OneClickScanAndUpload";
     public static string ShowDebugInfo = "ShowDebugInfo";
+    public static string LastWeight = "LastWeight";
 }

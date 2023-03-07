@@ -49,7 +49,11 @@ namespace MiScaleExporter.MAUI.ViewModels
 
         public async Task LoadPreferencesAsync()
         {
-            this._age = Preferences.Get(PreferencesKeys.UserAge, 25);
+            DateTime birthday = Preferences.Get(PreferencesKeys.UserBirthday, DateTime.Now.AddYears(-30));
+            int age = DateTime.Now.Year - birthday.Year;
+            if (birthday.Date > DateTime.Now.AddYears(-age)) age--;
+
+            this._age = age;
             this._height = Preferences.Get(PreferencesKeys.UserHeight, 170);
             this._sex = (Models.Sex)Preferences.Get(PreferencesKeys.UserSex, (byte)Models.Sex.Male);
             this._address = Preferences.Get(PreferencesKeys.MiScaleBluetoothAddress, string.Empty);

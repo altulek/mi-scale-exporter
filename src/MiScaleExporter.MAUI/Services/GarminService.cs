@@ -38,9 +38,13 @@ public class GarminService : IGarminService
         var result = new GarminApiResponse();
         try
         {
+            DateTime birthday = Preferences.Get(PreferencesKeys.UserBirthday, DateTime.Now.AddYears(-30));
+            int age = DateTime.Now.Year - birthday.Year;
+            if (birthday.Date > DateTime.Now.AddYears(-age)) age--;
+
             var userProfileSettings = new UserProfileSettings
             {
-                Age = Preferences.Get(PreferencesKeys.UserAge, 25),
+                Age = age,
                 Height = Preferences.Get(PreferencesKeys.UserHeight, 170),
             };
             var scaleDTO = new GarminWeightScaleDTO

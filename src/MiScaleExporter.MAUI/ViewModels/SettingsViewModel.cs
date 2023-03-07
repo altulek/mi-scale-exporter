@@ -30,7 +30,7 @@ namespace MiScaleExporter.MAUI.ViewModels
             this._oneClickScanAndUpload = Preferences.Get(PreferencesKeys.OneClickScanAndUpload, false);
             this._showDebugInfo = Preferences.Get(PreferencesKeys.ShowDebugInfo, false);
 
-            this._age = Preferences.Get(PreferencesKeys.UserAge, 25);
+            this._birthday = Preferences.Get(PreferencesKeys.UserBirthday, DateTime.Now.AddYears(-30) );
             this._height = Preferences.Get(PreferencesKeys.UserHeight, 170);
             this._sex = (Sex)Preferences.Get(PreferencesKeys.UserSex, (byte)Sex.Male);
             this._address = Preferences.Get(PreferencesKeys.MiScaleBluetoothAddress, string.Empty);
@@ -45,7 +45,7 @@ namespace MiScaleExporter.MAUI.ViewModels
         {
             return !String.IsNullOrWhiteSpace(_address)
                                         && _height > 0 && _height < 220
-                                        && _age > 0 && _age < 99;
+                                        && _birthday < DateTime.Now;
         }
 
         private string _apiAddress;
@@ -145,20 +145,18 @@ namespace MiScaleExporter.MAUI.ViewModels
             }
         }
 
-        private int _age;
-
-        public string Age
+        private DateTime _birthday;
+        public DateTime Birthday
         {
-            get => _age.ToString();
+            get => _birthday;
             set
             {
-                if (value is null) return;
-                if (int.TryParse(value, out var result))
+                if( value == new DateTime(1900,1,1) )
                 {
-                    SetProperty(ref _age, result);
-                    if (result == 0) return;
-                    Preferences.Set(PreferencesKeys.UserAge, result);
+                    return;
                 }
+                SetProperty(ref _birthday, value);
+                Preferences.Set(PreferencesKeys.UserBirthday, value);                
             }
         }
 

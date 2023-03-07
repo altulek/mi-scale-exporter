@@ -40,16 +40,9 @@
                                 HeightRequest="2"
                                 HorizontalOptions="Fill"
                                 Color="Gray" />
-                            <Label FontSize="Small" Text="Age" />
-                            <Entry
-                                    FontSize="Medium"
-                                    Keyboard="Numeric"
-                                    Text="{Binding Age, Mode=TwoWay}">
-                                <Entry.Behaviors>
-                                    <behaviors:NumericIntValidationBehavior />
-                                </Entry.Behaviors>
-                            </Entry>
-
+                            <Label FontSize="Small" Text="Birthday" />
+                            <DatePicker Date="{Binding Birthday}" />
+                            
                             <Label FontSize="Small" Text="Height" />
                             <Entry
                                     FontSize="Medium"

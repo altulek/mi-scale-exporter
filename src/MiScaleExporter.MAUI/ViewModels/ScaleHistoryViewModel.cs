@@ -12,6 +12,7 @@ namespace MiScaleExporter.MAUI.ViewModels
 
         private string _address;
         private int _age;
+        private double _lastWeight;
         private int _height;
         private Models.Sex _sex;
         private ScaleType _scaleType;
@@ -56,12 +57,17 @@ namespace MiScaleExporter.MAUI.ViewModels
 
         public async Task LoadPreferencesAsync()
         {
-            this._age = Preferences.Get(PreferencesKeys.UserAge, 25);
+            DateTime birthday = Preferences.Get(PreferencesKeys.UserBirthday, DateTime.Now.AddYears(-30));
+            int age = DateTime.Now.Year - birthday.Year;
+            if (birthday.Date > DateTime.Now.AddYears(-age)) age--;
+
+            this._age = age;
             this._height = Preferences.Get(PreferencesKeys.UserHeight, 170);
             this._sex = (Models.Sex)Preferences.Get(PreferencesKeys.UserSex, (byte)Models.Sex.Male);
             this._address = Preferences.Get(PreferencesKeys.MiScaleBluetoothAddress, string.Empty);
             this._scaleType = (ScaleType)Preferences.Get(PreferencesKeys.ScaleType, (byte)ScaleType.MiBodyCompositionScale);
             this._deviceId = BitConverter.GetBytes(UInt32.Parse(Preferences.Get(PreferencesKeys.DeviceId, String.Empty)));
+            this._lastWeight = Preferences.Get(PreferencesKeys.LastWeight, 70.0);
         }
 
         private async void OnScan()
@@ -114,7 +120,7 @@ namespace MiScaleExporter.MAUI.ViewModels
             LoadingLabel = "Getting data...";
             ScaleMeasurement.Instance.Weight = "0";
             this.IsBusyForm = true;
-            await this._scale.GetHistoryAsync(_address, _deviceId, new User { Sex = _sex, Age = _age, Height = _height, ScaleType = _scaleType });
+            await this._scale.GetHistoryAsync(_address, _deviceId, new User { Sex = _sex, Age = _age, Height = _height, ScaleType = _scaleType, LastWeight = _lastWeight });
             this.OnStop();
         }
 
@@ -162,6 +168,7 @@ namespace MiScaleExporter.MAUI.ViewModels
                     var message = response.IsSuccess ? String.Format("{0} > {1:0.00} Uploaded", bc.Date, bc.Weight) : response.Message;
                     //await Application.Current.MainPage.DisplayAlert("Response", message, "OK");
                     ScanningLabel += message + "\n";
+                    Preferences.Set(PreferencesKeys.LastWeight, bc.Weight);
                 }
             }
 

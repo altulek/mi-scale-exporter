@@ -353,7 +353,12 @@ namespace MiScaleExporter.Services
         private void TimeOuted(object s, EventArgs e)
         {
             StopAsync().Wait();
-            _completionSource.SetResult(this.BodyComposition);
+            if(this.BodyComposition != null)
+            {
+                _completionSource.SetResult(this.BodyComposition);
+            }
+            
+            _historyCompletionSource.SetResult(this._bodyCompositionHistory);
         }
 
         private async Task StopAsync()

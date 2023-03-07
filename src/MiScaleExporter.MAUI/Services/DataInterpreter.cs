@@ -40,6 +40,7 @@ namespace MiScaleExporter.Services
                             HasImpedance = hasImpedance,
                             IsStabilized = isStabilized,
                             Date = bc.Date,
+                            Send = (_user.LastWeight > bc.Weight - 5 && _user.LastWeight < bc.Weight + 5)
 
                         };
                         return bodyComposition;
@@ -66,7 +67,8 @@ namespace MiScaleExporter.Services
                             Weight = legacyResult.Weight,
                             BMI = legacyResult.BMI,
                             Date = legacyResult.Date,
-                            IsStabilized = true
+                            IsStabilized = true,
+                            Send = (_user.LastWeight > legacyResult.Weight - 5 && _user.LastWeight < legacyResult.Weight + 5)
                         };
 
                         return bodyComposition;

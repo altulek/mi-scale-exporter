@@ -40,7 +40,7 @@ namespace MiScaleExporter.Services
                             HasImpedance = hasImpedance,
                             IsStabilized = isStabilized,
                             Date = bc.Date,
-                            Send = (_user.LastWeight > bc.Weight - 5 && _user.LastWeight < bc.Weight + 5)
+                            Send = (_user.LastWeight > bc.Weight - 5 && _user.LastWeight < bc.Weight + 5 && bc.Date > DateTime.Now - TimeSpan.FromDays(30))
 
                         };
                         return bodyComposition;
